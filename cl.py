@@ -1,3 +1,4 @@
+from functools import total_ordering
 import re
 from re import search
 import operator
@@ -24,6 +25,8 @@ def has_chars():
 operators = ['/', '-', '+', '^']
 
 regex = r'\d{2}'
+
+x = []
 
 patr = re.compile(regex)
 
@@ -157,6 +160,29 @@ for s in operArray:
     print('index', s['index'])
     print('char', s['char'])
 
+realchars = []
+
+for s in sections:
+    realchars.append(value[s[0]:s[1]+1])
+
+total = 0
+p = 0
+o = -1
+firstTime = True
+for a in realchars:
+    if firstTime:
+        total = int(realchars[0])
+        firstTime = False
+        p+=1
+        o+=1
+    else:
+        op[x[o]](total, int(realchars[p]))
+        p+=1
+        o+=1
+
+print("special characters", x)
 print("sections", sections)
+print("realchars", realchars)
+print("total", total)
 print("subNums", subNumbers)
 print('arrayandIndexes', operArray)
