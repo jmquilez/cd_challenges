@@ -98,56 +98,6 @@ for m in re.finditer("[-, /, *, +, ^]", value):
     i+=1
     #n+=1
 
-"""for m in re.finditer("[-, /, *, +, ^]", value):
-    print('i:::: ', i)
-    print(i % 2)
-    operArray.append({
-        "index": m.start(),
-        "char": m.group()
-    })
-    
-    print('current index:', i-1)
-    print(i % 2)
-    print(m)
-    if i % 2 == 0:
-        #sections[n].append(m.start() - 1)
-        
-        if len(sections) != 0:
-            if len(sections[-1]) == 1:
-                sections[-1].append(m.start() - 1)
-        sections.append([m.end()])
-        print('even', sections)
-        #n+=1
-        
-    elif i % 2 != 0:
-        if len(sections) == 1:
-            sections[n].append(m.start() - 1)
-            sections.append([m.end()])
-        elif len(sections) > 1:
-            if len(sections[n]) > 1:
-                print(n)
-                print("greater than one")
-                sections[n + 1].append(m.start() - 1)
-                sections.append([m.end()])
-            else:
-                print(n)
-                print("equal to one")
-                sections[n+1].append(m.start() - 1)
-                sections.append([m.end()])
-        print('odd', sections)
-        n+=1
-    #emes.append[m]    
-    #98/98-89+897*645
-    i+=1
-    #print('seccionesthe', sections)
-    subNumbers.append(value[m.start():m.end()])
-    #print('match stack')
-    #print('re.match', m)
-    #print('operator in regex version', m.group())
-    #print('operator', value[m.start()])
-    #print('index', m.start(0))
-    #print(m.end(0))
-    """
 
 firstIndex = sections[0]
 
