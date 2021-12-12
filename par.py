@@ -1,11 +1,5 @@
-'''
-
-                            Online Python Compiler.
-                Code, Compile, Run and Debug python program online.
-Write your code in this editor and press "Run" button to execute it.
-
-'''
-
+# Online Python compiler (interpreter) to run Python online.
+# Write Python 3 code in this online editor and run it.
 from functools import total_ordering
 import re
 from re import search
@@ -43,20 +37,160 @@ x = []
 
 patr = re.compile(regex)
 
-z = None 
 if re.search("[(]", value):
     z = re.findall("[(]", value)
 
 print("zeta", z)
 
 oParentheses = []
+sect = []
 
-for o in re.finditer("[(]", value):
+
+for o in re.finditer("[)(]", value):
     #for s in re.finditer("[)]", value):
     oParentheses.append([o.start()])
-    print("ese", o)
-    print("o", o)
+    firstSection = value[o.start() + 1:len(value)]
+    sect.append([firstSection, value[o.start()], o.start() + 1])
+    #print("ese", o)
+    #print("o", o)
 
+
+print('sect', sect)
+
+example2 = re.search('geeks(?![a-z])', 'efgeeks123')
+couples = []
+openingBrackets = []
+closingBrackets = []
+opConmutate = []
+clConmutate = []
+sect0 = sect[0]
+previousMatch = [sect0[1], sect0[2] - 1]
+accumulativeMatches = []
+unclosedOpenings = []
+
+print("example2", example2.start())   
+
+for s in sect:
+
+    if s[1] == "(":
+        openingBrackets.append(s[2] - 1)
+    elif s[1] == ")":
+        closingBrackets.append(s[2] - 1)
+
+    if re.match('(?=[)(])', s[0]):
+        s0 =s[0]
+        pw = re.match('(?=[)(])', s0)
+        if s0[pw.start()] == ")" and previousMatch[0] == "(":
+            print('end with nothing inside brackets; previousMatch:', previousMatch)
+            raise ValueError("You put nothing inside brackets within last previous match")
+
+    if re.match('(?![\s\S])', s[0]):
+        print('continue')
+        break
+
+    if re.match('([)(])(?=[0-9-+/*^)(])', s[0]):
+        s0 =s[0]
+        pw = re.match('([)(])(?=[0-9-+/*^)(])', s0)
+        print("foundItem at Index:", pw.start())
+        print("item (CONSECUTIVE) is:", s0[pw.start()])
+        print("s is:", s)
+        if s0[pw.start()] == ")" and previousMatch[0] == "(":
+            print('nothing inside brackets; previousMatch:', previousMatch)
+            clConmutate.append(s[2] - 1)
+            print(clConmutate)
+            print("closing bracket CONSECUTIVE")
+            raise ValueError("You put nothing inside brackets")
+        elif s0[pw.start()] == ")":
+            print('previousMatch', previousMatch)
+            previousMatch = [")", s[2] + pw.start()]
+            if len(accumulativeMatches) == 0:
+                accumulativeMatches.append([s[1], s[2] - 1])
+            if len(accumulativeMatches) > 0:
+                minusone = accumulativeMatches[-1]
+                if minusone[1] != s[2] - 1:
+                    accumulativeMatches.append([s[1], s[2] - 1])
+            
+            accumulativeMatches.append([s0[pw.start()], s[2] + pw.start()])
+            print('accumulativeMatches', accumulativeMatches)
+            opConmutate.append(s[2] - 1)
+            print(opConmutate)
+            print("closing bracket CONSECUTIVE")
+        elif s0[pw.start()] == "(":
+            #accumulativeMatches.append([s0[pw.start()], s[2] + pw.start() + 1])
+            #minusone = accumulativeMatches[-1]
+            #if minusone
+            print('previousMatch', previousMatch)
+            previousMatch = ["(", s[2] + pw.start()]
+            #previousMatch = ["(", s0[pw.start()]]
+            #previousMatch = ["(", s[2]]
+            if len(accumulativeMatches) == 0:
+                accumulativeMatches.append([s[1], s[2] - 1])
+            if len(accumulativeMatches) > 0:
+                minusone = accumulativeMatches[-1]
+                if minusone[1] != s[2] - 1:
+                    accumulativeMatches.append([s[1], s[2] - 1])
+            """if len(accumulativeMatches) > 0:
+                accumulativeMatches.append([s0[pw.start()], s[2] + pw.start()])
+            else:
+                accumulativeMatches.append([s[1], s[2] - 1])
+                accumulativeMatches.append([s0[pw.start()], s[2] + pw.start()])"""
+            
+            accumulativeMatches.append([s0[pw.start()], s[2] + pw.start()])
+            print('accumulativeMatches', accumulativeMatches)
+            opConmutate.append(s[2] - 1)
+            print(opConmutate)
+            print("opening bracket CONSECUTIVE")
+    elif re.search('([0-9-+/*^])(?=[)(])', s[0]):
+        s0 = s[0]
+        pw = re.search('([0-9-+/*^])(?=[)(])', s0)
+        print("foundItem at Index:", pw.start())
+        print("item is:", s0[pw.start() + 1])
+        print("s is:", s)
+        if s0[pw.start() + 1] == ")":
+            print('previousMatch', previousMatch)
+            previousMatch = [")", s[2] + pw.start() + 1]
+            #previousMatch = [")", s0[pw.start()]]
+            #previousMatch = [")", s[2]]
+            clConmutate.append(s[2] - 1)
+            print(clConmutate)
+            print("closing bracket")
+        elif s0[pw.start() + 1] == "(":
+            print('previousMatch', previousMatch)
+            previousMatch = ["(", s[2] + pw.start() + 1]
+            #previousMatch = ["(", s0[pw.start()]]
+            #previousMatch = ["(", s[2]]
+            opConmutate.append(s[2] - 1)
+            print(opConmutate)
+            print("opening bracket")
+    #previousMatch = [s[1], s[2]]
+
+print('opening brackets:', openingBrackets)
+print('closing brackets:', closingBrackets)
+if len(closingBrackets) > len(openingBrackets):
+    raise ValueError("You exceed the limit of closing parentheses")
+#print('opconmutate', opConmutate)
+#print('clconmutate', clConmutate)
+
+
+"""for s in sect:
+    if re.search('([0-9-+/*^])(?=[(])', s[0]):
+        s0 = s[0]
+        pe = re.search('([0-9-+/*^])(?=[(])', s0)
+        both = re.search('([0-9-+/*^])(?=[)(])', s0)
+        print("ok")
+        print("opening ahead")
+        print(pe.start())
+        print(s)
+    elif re.search('([0-9-+/*^])(?=[)])', s[0]):
+        s0 = s[0]
+        pe = re.search('([0-9-+/*^])(?=[(])', s0)
+        print("closure ahead")
+        print(pe.start())
+        print(s)"""
+   
+   
+    
+print("sectsg", sect)
 n = 0
 for s in re.finditer("[)]", value):
     oParentheses[n].append(s.start())
@@ -172,7 +306,6 @@ for s in sections:
     """if x[l] == "^":
         nexts = sections[l + 1]
         realchars.append(value[s[0]:s[1] + 1]**value[nexts[0]:nexts[1] + 1])
-
     """
     realchars.append(value[s[0]:s[1]+1])
     l += 1
