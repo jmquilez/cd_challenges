@@ -8,13 +8,17 @@ op = {"+": operator.add, "-": operator.sub,
 
 def perform_operations(realPow, value):
 
+    print("THIS IS THE VALUE MACABEIS:", value)
+
     if re.search("[-, /, *, +, ^, ), (]", value):
         #x = re.findall("[-, /, *, +, ^, ), (]", value)
         x = re.findall("[-, /, *, +, ^]", value)
         y = re.search("[-, /, *, +, ^, ), (]", value).span()
         print('equis', x)
         print('ygriega', y)
-
+    else:
+        print("literally NO OPERATIONS FOUND")
+        return value
 
     operArray = []
     subNumbers = []
@@ -124,7 +128,7 @@ def perform_operations(realPow, value):
                             powerAde[0] = int(realchars[i])
                             powerAde[1] = int(realchars[i + 1])
                         else:
-                            poWed = int(realchars[i])**int(realchars[i+1])
+                            poWed = int(float(realchars[i]))**int(float(realchars[i+1]))
                             theRealChars.append(str(poWed))
                             print('realPow == 0, not advanced', poWed)
                             powerAde[0] = 0
@@ -225,7 +229,7 @@ def perform_operations(realPow, value):
                     prevIndices.append(p0)
                     sums[-1] = {
                         "total": op[x[o0]](float(prevSum["total"]),
-                                        int(realchars[p0])),
+                                        int(float(realchars[p0]))),
                         "op": x[o0],
                         "indices": prevIndices
                     }
@@ -281,7 +285,7 @@ def perform_operations(realPow, value):
                             prevIndices.append(p0)
                             sumsP[-1] = {
                                 "total": op[xNoPowed[oN]](float(prevSum["total"]),
-                                                        int(theRealChars[pN])),
+                                                        int(float(theRealChars[pN]))),
                                 "op": xNoPowed[oN],
                                 "indices": prevIndices
                             }
