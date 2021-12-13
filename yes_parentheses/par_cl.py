@@ -468,8 +468,53 @@ need = 0
 frst = True
 n1, n2 = 0, 1
 count = 0
+inmutLen = len(inmutVal)
+totalSbs = 0
+
 for p in nestingGroups:
     while len(p) > 0:
+        print("starting correct")
+        print("total Sbs", totalSbs)
+        last = p[-1]
+        print("lastGr", last)
+        print("before sect VALUE", value[:last["begin"]])
+        print("after sect VALUE", value[last["end"] + totalSbs+ 1:])
+        rw_str = value[last["begin"] + 1:last["end"] + totalSbs]
+        op_toPerform = ""
+        if "(" in rw_str and ")" in rw_str:
+            op_toPerform = rw_str.replace("(", '')
+            op_toPerform = op_toPerform.replace(")", '')
+        else:
+            op_toPerform = rw_str
+        
+        print("op to perform:", op_toPerform)
+        
+        res = calculate.perform_operations(realPow, op_toPerform)
+        
+        res_len = len(str(res))
+
+        print("value before part:", value[:last["begin"]])
+        # + 2*ad
+        print("value after part:", value[last["end"] + totalSubstract + 1:])
+
+        value = value[:last["begin"]] + str(res) + value[last["end"] + totalSubstract + 1:]
+
+        print("new Value_", value)
+        p.pop(-1)
+
+        total_res_len = len(value)
+
+        print("inmutValLen", inmutLen)
+        print("total value len", total_res_len)
+
+
+        totalSbs = 0
+        totalSbs = -1*(inmutLen - total_res_len)
+
+
+for p in nestingGroups:
+    while len(p) > 0:
+        print("starting equivocated")
         print("Repeating nested loop")
         last = p[-1]
         print("lastGroup", last)
