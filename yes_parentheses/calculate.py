@@ -8,11 +8,25 @@ op = {"+": operator.add, "-": operator.sub,
 
 def perform_operations(realPow, value):
 
+    rgx_finditer = []
+
     print("THIS IS THE VALUE MACABEIS:", value)
 
     if re.search("[-, /, *, +, ^, ), (]", value):
         #x = re.findall("[-, /, *, +, ^, ), (]", value)
         x = re.findall("[-, /, *, +, ^]", value)
+        rgx = re.compile("[-, /, *, +, ^]")
+        for m in rgx.finditer(value):
+            rgx_finditer.append(m.start())
+            print("spanning", rgx_finditer)
+
+        print("total span", rgx_finditer)
+
+        
+        for i in range(len(rgx_finditer) - 1):
+            if rgx_finditer[i + 1] == 1 + rgx_finditer[i]:
+                print("found consecutive operations")
+
         y = re.search("[-, /, *, +, ^, ), (]", value).span()
         print('equis', x)
         print('ygriega', y)
@@ -20,6 +34,7 @@ def perform_operations(realPow, value):
         print("literally NO OPERATIONS FOUND")
         return value
 
+    #print("x span", x.span())
     operArray = []
     subNumbers = []
     sections = []
@@ -194,6 +209,7 @@ def perform_operations(realPow, value):
     print('post-processed reales', realchars)
     xNoPowed = []
 
+    
     for s in x:
         if s == "^":
             print("its a pow")
@@ -203,6 +219,9 @@ def perform_operations(realPow, value):
     if x[-1] != "^":
         theRealChars.append(realchars[len(realchars) - 1])
 
+    """curs = 0
+    for s in x:
+        if """
 
     print('xNoPowed', xNoPowed)
     print("theRealOnes", theRealChars)
