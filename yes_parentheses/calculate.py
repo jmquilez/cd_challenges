@@ -9,6 +9,9 @@ op = {"+": operator.add, "-": operator.sub,
 def perform_operations(realPow, value):
 
     rgx_finditer = []
+    spanes = []
+    minus_set = []
+    grps = []
 
     print("THIS IS THE VALUE MACABEIS:", value)
 
@@ -18,18 +21,103 @@ def perform_operations(realPow, value):
         rgx = re.compile("[-, /, *, +, ^]")
         for m in rgx.finditer(value):
             rgx_finditer.append(m.start())
+            spanes.append(m.span())
+            grps.append(m.group())
             print("spanning", rgx_finditer)
-
-        print("total span", rgx_finditer)
-
         
+        print("groupos", grps)
+        print("spanes", spanes)
+        print("total span", rgx_finditer)
+        print("rgx", rgx.finditer(value))
+        
+        popeados = 0
+        ol = 0
+        delta = 0
         for i in range(len(rgx_finditer) - 1):
-            if rgx_finditer[i + 1] == 1 + rgx_finditer[i]:
-                print("found consecutive operations")
+            #if rgx_finditer[i + 1]:
+            try:
+                s = grps[i + 1]
+                if rgx_finditer[i + 1] == 1 + rgx_finditer[i]:
+                    print("current i", i)
+                    print("current indice", ol)
+                    current = rgx_finditer[i]
+                    nexts = rgx_finditer[i + 1]
+                    print("found consecutive operations at indexes:", rgx_finditer[i], rgx_finditer[i + 1])
+                    print("operators are:", value[rgx_finditer[i]], value[rgx_finditer[i + 1]])
+                    retr = []
+                    retr.append(value[rgx_finditer[i]])
+                    retr.append(value[rgx_finditer[i + 1]])
+                    if (current == "-" or current == "+") and (nexts == "^" or nexts == "/" or nexts == "*"):
+                        raise ValueError("cannot pow, divide or multiply inmediatly after a multiplication")
+                        
+                    print("grps ol", grps[ol])
+                    print("grps ol + 1", grps[ol + 1])
+                    if (grps[ol] == "-" or grps[ol] == "+") and (grps[ol + 1] == "-" or grps[ol + 1] == "+"):
+                        if current == "-":
+                            minus_set.append("-")
+                            x.pop(ol + popeados)
+                            value = value.replace(value[current + delta], "")
+                            #value.pop(current + delta)
+                            delta-=1
+                            popeados-=1
+                            print("popped minus, current x:", x)
+                            print("current popeados (after):", popeados)
+                            print("current minus_set", minus_set)
+                        elif current == "+":
+                            print("Plus encountered")
+                            x.pop(ol + popeados)
+                            value = value.replace(value[current + delta], "")
+                            delta-=1
+                            popeados-=1
+                            print("popped plus, current x:", x)
+                            print("current popeados (after):", popeados)
+
+                    """for i in retr:
+                        if i == "-":
+                            minus_set.append(i)
+                        elif i == "+":
+                            print("Plus encountered")
+                            x.pop(ol + popeados)
+                            popeados-=1"""
+                    if (grps[ol] == "*" or grps[ol] == "/" or grps[ol] == "^") and (grps[ol + 1] == "-" or grps[ol + 1] == "+"):
+                        print("found a consequence!!!")
+                        if grps[ol + 1] == "-":
+                            minus_set.append("-")
+                            print("o ele", ol)
+                            print("popeados", popeados)
+                            print(x[0])
+                            x.pop(ol + popeados + 1)
+                            value = value.replace(value[current + delta + 1], "")
+                            #value.pop(current + delta + 1)
+                            delta-=1
+                            popeados-=1
+                            print("popped minus, current x:", x)
+                            print("current popeados (after):", popeados)
+                            print("current minus_set", minus_set)
+                        elif grps[ol + 1] == "+":
+                            print("Plus encountered")
+                            x.pop(ol + popeados + 1)
+                            value = value.replace(value[current + delta + 1], "")
+                            delta-=1
+                            popeados-=1
+                            print("popped plus, current x:", x)
+                            print("current popeados (after):", popeados)
+
+                    
+                    #if "+" in retr or "-" in retr:
+                ol+=1
+                    
+                    #if (current == "*" and rgx_finditer[i + 1] == "/") or (rgx_finditer[i] == "*")
+
+            except IndexError:
+                print("already mapped")
+                continue
 
         y = re.search("[-, /, *, +, ^, ), (]", value).span()
         print('equis', x)
         print('ygriega', y)
+        print('minus set after', minus_set)
+        print('equis after', x)
     else:
         print("literally NO OPERATIONS FOUND")
         return value
