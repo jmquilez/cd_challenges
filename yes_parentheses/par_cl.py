@@ -497,7 +497,7 @@ for p in nestingGroups:
         # + 2*ad
         print("value after part:", value[last["end"] + totalSubstract + 1:])
 
-        value = value[:last["begin"]] + str(res) + value[last["end"] + totalSubstract + 1:]
+        value = value[:last["begin"]] + str(res) + value[last["end"] + totalSbs + 1:]
 
         print("new Value_", value)
         p.pop(-1)

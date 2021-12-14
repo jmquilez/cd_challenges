@@ -176,6 +176,22 @@ def perform_operations(realPow, value):
                 print('theRealCharsProcessing', theRealChars)
 
     print('los caracteres reales', theRealChars)
+    const = 0
+    for g in theRealChars:
+        if g == "":
+            theRealChars.pop(const)
+        const+=1
+
+    local = 0
+    print("real chars before", realchars)
+    for g in realchars:
+        if g == "":
+            print("curr index", local)
+            realchars.pop(local)
+        local+=1
+
+    print('post-processed theReales', theRealChars)
+    print('post-processed reales', realchars)
     xNoPowed = []
 
     for s in x:
@@ -210,6 +226,8 @@ def perform_operations(realPow, value):
         if z == "+" or z == "-":
             addOrSub.append(z)
 
+    print("theRealchars before loop", theRealChars)
+    print("realchars before loop", realchars)
     for a in realchars:
         if firstTime:
             comp = int(realchars[0])
@@ -227,6 +245,9 @@ def perform_operations(realPow, value):
                 if prevSum["op"] == "*" or prevSum["op"] == "/":
                     prevIndices = prevSum["indices"]
                     prevIndices.append(p0)
+                    print("current_float_index", p0)
+                    print("current_real_chars", realchars)
+                    print("current_float", realchars[p0])
                     sums[-1] = {
                         "total": op[x[o0]](float(prevSum["total"]),
                                         int(float(realchars[p0]))),
