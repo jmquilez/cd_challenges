@@ -13,13 +13,29 @@ def perform_operations(realPow, value):
     minus_set = []
     grps = []
 
+    op = {"+": operator.add, "-": operator.sub,
+      "/": operator.truediv, "*": operator.mul, "^": operator.pow}
+
     print("THIS IS THE VALUE MACABEIS:", value)
+
+    newEquis = []
+        #TODO: for g in x: newEquis.append({
+        # "operator": "*",
+        # "isAdjacent": false,
+        # "index": 1
+        # })
 
     if re.search("[-, /, *, +, ^, ), (]", value):
         #x = re.findall("[-, /, *, +, ^, ), (]", value)
         x = re.findall("[-, /, *, +, ^]", value)
         rgx = re.compile("[-, /, *, +, ^]")
         for m in rgx.finditer(value):
+            newEquis.append({
+                "operator": m.group(),
+                "isAdjacent": False,
+                "start": m.start(),
+                "end": m.end()
+            })
             rgx_finditer.append(m.start())
             spanes.append(m.span())
             grps.append(m.group())
@@ -29,33 +45,118 @@ def perform_operations(realPow, value):
         print("spanes", spanes)
         print("total span", rgx_finditer)
         print("rgx", rgx.finditer(value))
-        
+        print("newEquis", newEquis)
+        consecutives = []
+
+        diferent = 0
+        newLoop = True
+        frst = True
+        for h in range(len(newEquis) - 1):
+            ls = h + diferent
+            lo = h + diferent + 1
+            ls1 = newEquis[ls]
+            lo1 = newEquis[lo]
+            print("ranging, ls:", ls)
+            print("ranging, lo:", lo)
+            print("newLoop", newLoop)
+            if ls1["start"] == lo1["start"] - 1:
+                print("found consecutive ones")
+                skipin = False
+                if frst == False:
+                    for l in consecutives[-1]:
+                        if newEquis[ls] == l:
+                            print("skipin == True")
+                            skipin = True
+                if newLoop == True:
+                    print("newLoop is true")
+                    if skipin == False:
+                        consecutives.append([newEquis[ls]])
+                    consecutives[-1].append(newEquis[lo])
+                    newLoop = False
+                    print("consecs", consecutives)
+                elif newLoop == False:
+                    print("newLoop is false")
+                    if skipin == False:
+                        consecutives[-1].append(newEquis[ls])
+                    consecutives[-1].append(newEquis[lo])
+                    print("consecs", consecutives)
+                    
+                #diferent += 1
+            else:
+                print("newLoop else")
+                newLoop = True
+            frst = False
+        print("consecutiveness", consecutives)
+
+        #for 
+
         popeados = 0
         ol = 0
         delta = 0
+        differ = 0
+        
+        #TODO: ADD SIGNS IN CASE
         for i in range(len(rgx_finditer) - 1):
             #if rgx_finditer[i + 1]:
             try:
-                s = grps[i + 1]
+                k = x[i + differ + 1]
+                #s = grps[i + 1]
                 if rgx_finditer[i + 1] == 1 + rgx_finditer[i]:
                     print("current i", i)
                     print("current indice", ol)
-                    current = rgx_finditer[i]
-                    nexts = rgx_finditer[i + 1]
+                    current = x[i + differ] # or ol instead of i
+                    nexts = x[i + differ + 1]
+                    current0 = rgx_finditer[i]
+                    nexts0 = rgx_finditer[i + 1]
+                    print("current0", current0)
+                    print("nexts0", nexts0)
                     print("found consecutive operations at indexes:", rgx_finditer[i], rgx_finditer[i + 1])
                     print("operators are:", value[rgx_finditer[i]], value[rgx_finditer[i + 1]])
                     retr = []
-                    retr.append(value[rgx_finditer[i]])
-                    retr.append(value[rgx_finditer[i + 1]])
+                    retr.append(value[rgx_finditer[i + delta]])
+                    retr.append(value[rgx_finditer[i + delta + 1]])
                     if (current == "-" or current == "+") and (nexts == "^" or nexts == "/" or nexts == "*"):
                         raise ValueError("cannot pow, divide or multiply inmediatly after a multiplication")
                         
                     print("grps ol", grps[ol])
                     print("grps ol + 1", grps[ol + 1])
+                    sign = None
+
+                    if (current == "-" or current == "+") and (nexts == "-" or nexts == "+"):
+                        if (current == "-" and nexts == "+") or (current == "+" and nexts == "-"):
+                            sign = "-"
+                            
+                        elif current == "+" and nexts == "+":
+                            sign = "+"
+                        elif current == "-" and nexts == "-":
+                            sign = "+"
+                        #op[x[o0]](float(prevSum["total"]),
+                         #              int(realchars[p0]))
+                    differ-=1
+                    #append sign to newEquis or replace value in original x ==> newEquis.remove(ol), newEquis.remove(ol + 1). newEquis[ol] = sign 
+
+                    #TODO (uncomment)
+                    """if (current == "*" or current == "/" or current == "^") and (nexts == "-" or nexts == "+"):
+                        print("conseq found")
+                        if nexts == "+":
+                            print("sum or subs encountered after operator:", current, "and it is:", nexts)
+                            newEquis.pop(ol + differ + 1)
+                            differ-=1
+                        elif nexts == "-":
+                            print("sum or subs encountered after operator:", current, "and it is:", nexts)
+                            newEquis[ol + differ + 1] == {
+                                "operator": "-",
+                                "isAdjacent": True
+                            }"""
+
+
                     if (grps[ol] == "-" or grps[ol] == "+") and (grps[ol + 1] == "-" or grps[ol + 1] == "+"):
+                        #if (current == "-" and nexts == "+") or (current =="")
+                        """mult = []
+                        mult.push"""
                         if current == "-":
                             minus_set.append("-")
-                            x.pop(ol + popeados)
+                            #x.pop(ol + popeados)
                             value = value.replace(value[current + delta], "")
                             #value.pop(current + delta)
                             delta-=1
@@ -65,7 +166,7 @@ def perform_operations(realPow, value):
                             print("current minus_set", minus_set)
                         elif current == "+":
                             print("Plus encountered")
-                            x.pop(ol + popeados)
+                            #x.pop(ol + popeados)
                             value = value.replace(value[current + delta], "")
                             delta-=1
                             popeados-=1
@@ -81,13 +182,14 @@ def perform_operations(realPow, value):
                             popeados-=1"""
                     if (grps[ol] == "*" or grps[ol] == "/" or grps[ol] == "^") and (grps[ol + 1] == "-" or grps[ol + 1] == "+"):
                         print("found a consequence!!!")
+                        
                         if grps[ol + 1] == "-":
                             minus_set.append("-")
                             print("o ele", ol)
                             print("popeados", popeados)
                             print(x[0])
                             x.pop(ol + popeados + 1)
-                            value = value.replace(value[current + delta + 1], "")
+                            value = value.replace(value[current0 + delta + 1], "")
                             #value.pop(current + delta + 1)
                             delta-=1
                             popeados-=1
@@ -97,7 +199,7 @@ def perform_operations(realPow, value):
                         elif grps[ol + 1] == "+":
                             print("Plus encountered")
                             x.pop(ol + popeados + 1)
-                            value = value.replace(value[current + delta + 1], "")
+                            value = value.replace(value[current0 + delta + 1], "")
                             delta-=1
                             popeados-=1
                             print("popped plus, current x:", x)
@@ -280,18 +382,34 @@ def perform_operations(realPow, value):
 
     print('los caracteres reales', theRealChars)
     const = 0
-    for g in theRealChars:
+    for g in range(len(theRealChars) - 1):
+        if theRealChars[g + const] == "":
+            print("curr index", g + const)
+            theRealChars.pop(g + const)
+            const-=1
+    """for g in theRealChars:
         if g == "":
             theRealChars.pop(const)
-        const+=1
+        const+=1"""
 
     local = 0
     print("real chars before", realchars)
-    for g in realchars:
+    idx = 0
+    for g in range(len(realchars) - 1):
+        if realchars[g + local] == "":
+            print("curr index", g + local)
+            realchars.pop(g + local)
+            local-=1
+        #local-=1
+        #local+=1
+
+    """for g in realchars:
         if g == "":
             print("curr index", local)
             realchars.pop(local)
-        local+=1
+            local-=1
+        #local-=1
+        local+=1"""
 
     print('post-processed theReales', theRealChars)
     print('post-processed reales', realchars)

@@ -471,6 +471,8 @@ count = 0
 inmutLen = len(inmutVal)
 totalSbs = 0
 
+#TODO: MAKE LAST PART OF NEW VALUE LAST ACCUMULATED STRING
+#TODO: add parentheses completion at the end
 for p in nestingGroups:
     while len(p) > 0:
         print("starting correct")
