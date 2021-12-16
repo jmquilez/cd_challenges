@@ -88,7 +88,47 @@ def perform_operations(realPow, value):
             frst = False
         print("consecutiveness", consecutives)
 
-        #for 
+        aNew = True
+        retraited = 0
+        minsOrPlus = []
+        for a in consecutives:
+            a0 = a[0]
+            if a0["operator"] == "-" or a0["operator"] == "+":
+                print("found", a0["operator"], " in consecutives")
+                for p in range(1, len(a)):
+                    curp = a[p]
+                    if curp["operator"] == "*" or curp["operator"] == "/" or curp["operator"] == "^":
+                        print("first case")
+                        raise ValueError("Cannot", curp["operator"], " a", a0["operator"])
+                    else:
+                        opx = curp["operator"]
+                        if aNew == True:
+                            minsOrPlus.append([opx])
+                            aNew = False
+                        else:
+                            minsOrPlus[-1].append(opx)
+                        print("first case, its a:", curp["operator"])
+
+            elif a0["operator"] == "*" or a0["operator"] == "/" or a0["operator"] == "^":
+                print("found", a0["operator"], " in consecutives")
+                for p in range(1, len(a)):
+                    curp = a[p]
+                    if curp["operator"] == "*" or curp["operator"] == "/" or curp["operator"] == "^":
+                        print("second case")
+                        raise ValueError("Cannot", curp["operator"], " a", a0["operator"])
+                    else:
+                        print("second case, its a:", curp["operator"])
+                        opx = curp["operator"]
+                        if aNew == True:
+                            minsOrPlus.append([opx])
+                            aNew = False
+                        else:
+                            minsOrPlus[-1].append(opx)
+                        
+            aNew = True
+        
+
+        print("minusOrPls", minsOrPlus)
 
         popeados = 0
         ol = 0
