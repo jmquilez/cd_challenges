@@ -2,6 +2,7 @@ from functools import total_ordering
 import re
 from re import search
 import operator
+import sre_constants
 
 op = {"+": operator.add, "-": operator.sub,
       "/": operator.truediv, "*": operator.mul, "^": operator.pow}
@@ -91,11 +92,14 @@ def perform_operations(realPow, value):
         aNew = True
         retraited = 0
         minsOrPlus = []
+        lens = []
+
         for a in consecutives:
             a0 = a[0]
             if a0["operator"] == "-" or a0["operator"] == "+":
                 print("found", a0["operator"], " in consecutives")
-                for p in range(1, len(a)):
+                #TODO: possible error
+                for p in range(0, len(a) - 1):
                     curp = a[p]
                     if curp["operator"] == "*" or curp["operator"] == "/" or curp["operator"] == "^":
                         print("first case")
@@ -103,10 +107,13 @@ def perform_operations(realPow, value):
                     else:
                         opx = curp["operator"]
                         if aNew == True:
-                            minsOrPlus.append([opx])
+                            strp = opx + "1" #*
+                            minsOrPlus.append([strp]) #opx
                             aNew = False
+                            lens.append(-1*(len(a) - 1))
                         else:
-                            minsOrPlus[-1].append(opx)
+                            strin = opx + "1" #*
+                            minsOrPlus[-1].append(strin)
                         print("first case, its a:", curp["operator"])
 
             elif a0["operator"] == "*" or a0["operator"] == "/" or a0["operator"] == "^":
@@ -120,22 +127,265 @@ def perform_operations(realPow, value):
                         print("second case, its a:", curp["operator"])
                         opx = curp["operator"]
                         if aNew == True:
-                            minsOrPlus.append([opx])
+                            strp = opx + "1" #*
+                            minsOrPlus.append([strp])
                             aNew = False
                         else:
-                            minsOrPlus[-1].append(opx)
+                            strin = opx + "1" #*
+                            minsOrPlus[-1].append(strin)
                         
             aNew = True
         
 
         print("minusOrPls", minsOrPlus)
 
+        substrass = []
+
+        for g in range(len(consecutives) - 1):
+            try:
+                i = consecutives[g]
+                imens = i[-1]
+                inext = consecutives[g + 1]
+                inxs = inext[0]
+                if inxs["operator"] == "*" or inxs["operator"] == "/" or inxs["operator"] == "^":
+                    substr = value[imens["end"]:inxs["start"] + 1]
+                else:
+                    substr = value[imens["end"]:inxs["start"]]
+                substrass.append(substr)
+            except IndexError:
+                print("haha didit")
+
+        def lons():
+            firstOfAll = consecutives[0]
+            sero = firstOfAll[0]
+            start = sero["start"]
+            print("sero start", start)
+            lastOfAll = consecutives[-1]
+            last = lastOfAll[-1]
+            lase = last["end"] + 1
+            print("last end", lase)
+            if sero["operator"] == "*" or sero["operator"] == "/" or sero["operator"] == "^":
+                premiere = value[0:start + 1]
+            else:
+                premiere = value[0:start]
+            print("premiere", premiere)
+            seconde = value[lase:len(value)]
+            print("seconde", seconde)
+            substrass.insert(0, premiere)
+            substrass.append(seconde)
+
+        lons()
+        print("substrass", substrass)
+
+        origSubstrass = substrass
+
+        for m in consecutives:
+            m0= m[0]
+            mlast = m[-1]
+            values = [m0["start"], mlast["end"]]
+            substr = value[values[0]:values[1]]
+            #TODO: revise
+            #substrass.append(substr)
+        print("all substrass")
+
+        totalSigns = []
+        fst = True
+        for c in minsOrPlus:
+            print("new c")
+            curVal = 0
+            for h in range(len(c) - 1):
+                try:
+                    print("operating...")
+                    curr = int(c[h])
+                    nex = int(c[h + 1])
+                    print("curr", curr)
+                    print("nex", nex)
+                    print("curVal", curVal)
+                    if fst == True:
+                        print("it is thefirst")
+                        val = op["*"](curr, nex)
+                        curVal = val
+                        fst = False
+                    else:
+                        curVal = op["*"](curVal, nex)
+                    
+                except IndexError:
+                    print("done it")
+            fst = True
+            totalSigns.append(curVal)
+
+        defSigns = []
+        for s in totalSigns:
+            strin = str(s)
+            if re.match("[-]", strin):
+                mach =  re.match("[-]", strin)
+                defSigns.append(mach.group())
+            else:
+                defSigns.append("+")
+
+        print("signos totales", totalSigns)
+        print("defSigns", defSigns)
+        
+        prevVal = ""
+        first = True
+        gx = 0
+        specialIndices = []
+        sechiones = []
+        for i in defSigns:
+            if first:
+                prevVal = substrass[0] + i + substrass[1]
+                print("value first", prevVal)
+                specialIndices.append(len(substrass[0]))
+                sechiones.append([0, len(substrass[0]) - 2])
+                sechiones.append([len(substrass[0]), len(prevVal) - 2])
+                first = False
+            else:
+                print("value next", prevVal)
+                specialIndices.append(len(prevVal))
+                prevLen = len(prevVal)
+                prevVal = prevVal + i + substrass[gx + 1]
+                sechiones.append([prevLen, len(prevVal) - 1])
+            
+            
+            gx+=1
+
+        if len(prevVal) > 0:
+            value = prevVal
+        
+        findIters = []
+        rel_sections = []
+        
+        for j in re.finditer("[-, /, *, +, ^]", value):
+            findIters.append(j)
+
+        print("findIters", findIters)
+        frt = True
+        justPass = False
+        """for u in range(len(findIters) - 1):
+            if frt:
+                rel_sections.append([0, findIters[u].start() - 1])
+                try:
+                    if findIters[u].start() == findIters[u + 1].start() - 1:
+                        print("justPass")
+                        justPass = True
+                except IndexError:
+                    print("endeds")
+                frt = False
+            else:
+                if justPass:
+                    try:
+                        print("computinh justPass")
+                        rel_sections.append([findIters[u].start(), findIters[u + 1].start() - 1])
+                        #if findIters[u].start() == findIters[u + 1].start() - 1:
+                            #justPass = True
+                        justPass = False
+                    except IndexError:
+                        print("indiced error")
+                else:
+                    try:
+                        print("computing notPassed")
+                        lastEnd = findIters[u - 1].end()
+                        rel_sections.append([lastEnd, findIters[u].start() - 1])
+                        if findIters[u].start() == findIters[u + 1].start() - 1:
+                            print("justPass")
+                            justPass = True
+                    except IndexError:
+                        print("excepted")"""
+
+        for u in range(len(findIters)):
+            print("current u", findIters[u].group())
+            if frt:
+                #rel_sections.append([findIters[u].end()])
+                rel_sections.append([0, findIters[u].start() - 1])
+                try:
+                    if findIters[u].start() == findIters[u + 1].start() - 1:
+                        "going to pass, first time"
+                        #print("justPass")
+                        #justPass = True
+                    else:
+                        print("first time")
+                except IndexError:
+                    print("endeds")
+                frt = False
+            else:
+                try:
+                    #sx = findIters[u + 1]
+                    if findIters[u].start() - 1 == findIters[u - 1].start():
+                        #rel_sections[u - 1].append(findIters[u].start())
+                        #rel_sections.append([sx.start() - 1])
+                        try:
+                            rel_sections.append([findIters[u].start(), findIters[u + 1].start() - 1])
+                            justPass = True
+                            print("added to relsects")
+                        except IndexError:
+                            print("indiced badly")
+                        
+                    elif justPass:
+                        print("cool")
+                        justPass = False
+                    else:
+                        rel_sections.append([findIters[u - 1].end(), findIters[u].start() - 1])
+                        print("regular")
+
+                        
+                except IndexError:
+                    print("Index erros")
+                    
+                    
+        def append_last():
+            rel_sections.append([findIters[-1].start() + 1, len(value) - 1])
+        append_last()
+        
+        #LAST WORKED HERE, TODO
+        rel_x = []
+        def real_x():
+            for k in origSubstrass:
+                print("sustraer", origSubstrass)
+                print("ka", k)
+                mats = re.findall("[-, /, *, +, ^]", k)
+                s = 0
+                print("mats", mats)
+                for g in mats:
+                    rel_x.append(g)
+                    print("mateos", mats)
+                    s+=1
+                #rel_x.append(mats[0])
+                #print("added", mats[0], " to rel_x")
+        real_x()
+
+        #if len(rel_x) > 0:
+        x = rel_x
+        
+        #TODO:
+        #x = rel_x
+        #secciones = rel_sections
+        #value = prevVal
+        print("rel_x", rel_x)
+
+        print("prevVal", prevVal)
+        print("newVal", value)
+        print("specialIndices", specialIndices)
+        print("sechions", sechiones)
+        print("REAL_SECCIONES", rel_sections)
+        signatures = []
+        valArr = []
+        """for c in minsOrPlus:
+            valToOp = ""
+            for ñ in c:
+                valToOp = valToOp + ñ
+            valArr.append(valToOp)
+            print("appended new valToOp")
+            signatures.append(int(valToOp))"""
+
+        print("valArr", valArr)
+        print("signatures", signatures)
         popeados = 0
         ol = 0
         delta = 0
         differ = 0
         
         #TODO: ADD SIGNS IN CASE
+        #remove
         for i in range(len(rgx_finditer) - 1):
             #if rgx_finditer[i + 1]:
             try:
@@ -197,7 +447,7 @@ def perform_operations(realPow, value):
                         if current == "-":
                             minus_set.append("-")
                             #x.pop(ol + popeados)
-                            value = value.replace(value[current + delta], "")
+                            #value = value.replace(value[current + delta], "")
                             #value.pop(current + delta)
                             delta-=1
                             popeados-=1
@@ -207,7 +457,7 @@ def perform_operations(realPow, value):
                         elif current == "+":
                             print("Plus encountered")
                             #x.pop(ol + popeados)
-                            value = value.replace(value[current + delta], "")
+                            #value = value.replace(value[current + delta], "")
                             delta-=1
                             popeados-=1
                             print("popped plus, current x:", x)
@@ -220,7 +470,8 @@ def perform_operations(realPow, value):
                             print("Plus encountered")
                             x.pop(ol + popeados)
                             popeados-=1"""
-                    if (grps[ol] == "*" or grps[ol] == "/" or grps[ol] == "^") and (grps[ol + 1] == "-" or grps[ol + 1] == "+"):
+                            #TODO: UNCOMMENT
+                    """if (grps[ol] == "*" or grps[ol] == "/" or grps[ol] == "^") and (grps[ol + 1] == "-" or grps[ol + 1] == "+"):
                         print("found a consequence!!!")
                         
                         if grps[ol + 1] == "-":
@@ -229,7 +480,7 @@ def perform_operations(realPow, value):
                             print("popeados", popeados)
                             print(x[0])
                             x.pop(ol + popeados + 1)
-                            value = value.replace(value[current0 + delta + 1], "")
+                            #value = value.replace(value[current0 + delta + 1], "")
                             #value.pop(current + delta + 1)
                             delta-=1
                             popeados-=1
@@ -239,12 +490,12 @@ def perform_operations(realPow, value):
                         elif grps[ol + 1] == "+":
                             print("Plus encountered")
                             x.pop(ol + popeados + 1)
-                            value = value.replace(value[current0 + delta + 1], "")
+                            #value = value.replace(value[current0 + delta + 1], "")
                             delta-=1
                             popeados-=1
                             print("popped plus, current x:", x)
                             print("current popeados (after):", popeados)
-
+"""
                     
                     #if "+" in retr or "-" in retr:
                 ol+=1
@@ -341,6 +592,14 @@ def perform_operations(realPow, value):
 
     rango = len(sections) - 1
 
+    #TODO: this changes everything
+    #sections = sechiones
+    if len(rel_sections) > 0:
+            sections = rel_sections
+
+    print("valor definitivo", value)
+    print("secciones definitivas", sections)
+    print("x definitiva", x)
     for s in sections:
         realchars.append(value[s[0]:s[1]+1])
         l += 1
@@ -349,6 +608,8 @@ def perform_operations(realPow, value):
     justPowed = 0
     powerAde = [0, 0]
     print('valor_real', value)
+
+    print("indices especials", specialIndices)
 
     print('secciones_reales', sections)
 
