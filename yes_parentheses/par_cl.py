@@ -381,6 +381,8 @@ def srt(z):
 
 couples.sort(key=srt, reverse=False)
 print("sorted couples", couples)
+#TODO
+print("COMPLETE GROUPS", couples)
 
 def srt2(z):
     return z["begin"]
@@ -473,6 +475,7 @@ totalSbs = 0
 
 #TODO: MAKE LAST PART OF NEW VALUE LAST ACCUMULATED STRING
 #TODO: add parentheses completion at the end
+previousVal = ""
 for p in nestingGroups:
     while len(p) > 0:
         print("starting correct")
@@ -500,6 +503,33 @@ for p in nestingGroups:
         print("value after part:", value[last["end"] + totalSubstract + 1:])
 
         value = value[:last["begin"]] + str(res) + value[last["end"] + totalSbs + 1:]
+
+        print("valToWatch", value[:last["begin"]])
+        closing = re.search(r'(?<=[)])\d', value[:last["begin"]])
+        opening = re.search(r'(?<=[(])\d', value[:last["begin"]])
+        if opening != None:
+            print("opening matches", opening.span())
+        elif opening == None:
+            print("opening is None")
+        if closing != None:
+            print("closing matches", closing.span())
+        elif closing == None:
+            print("closing is None")
+            previousVal = str(res) + value[last["end"] + totalSbs + 1:]
+        
+        #TODO: left here
+        if closing != None and opening != None:
+            if closing[0] > opening[0]:
+                p2 = p[-2]
+                print("special case")
+                previousVal = value[p2["end"] + 1:last["begin"]] + str(res) + previousVal
+            elif closing[0] < opening[0]:
+                #TODO: change for previous val
+                previousVal = str(res) + value[last["end"] + totalSbs + 1:]
+
+        """if re.search(r'(?<=[)])\d', "geeks12"):
+
+        elif re.search(r'(?<=[(]', "jds"):"""
 
         print("new Value_", value)
         p.pop(-1)

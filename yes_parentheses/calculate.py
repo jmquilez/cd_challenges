@@ -624,6 +624,7 @@ def perform_operations(realPow, value):
         elif justPowed == 0 or x[i] == "^":
             if x[i] == "^" and justPowed == 0:
                 if realPow == 1:
+                    #TODO: change this to if "-" in
                     poWed = int(realchars[i])**int(realchars[i+1])
                     theRealChars.append(str(poWed))
                     print('currentop', x[i])
@@ -635,13 +636,24 @@ def perform_operations(realPow, value):
                             powerAde[1] = int(realchars[i + 1])
                         else:
                             poWed = int(float(realchars[i]))**int(float(realchars[i+1]))
-                            theRealChars.append(str(poWed))
+                            poWeRed = ""
+                            if "-" in realchars[i]:
+                                poWeRed = "-" + str(poWed)
+                            else:
+                                poWeRed = str(poWed)
+                            theRealChars.append(poWeRed)
+                            #theRealChars.append(str(poWed))
                             print('realPow == 0, not advanced', poWed)
                             powerAde[0] = 0
                             powerAde[1] = 0
                     else:
                         poWed = int(realchars[i])**int(realchars[i+1])
-                        theRealChars.append(str(poWed))
+                        poWeRed = ""
+                        if "-" in realchars[i]:
+                            poWeRed = "-" + str(poWed)
+                        else:
+                            poWeRed = str(poWed)
+                        theRealChars.append(poWeRed)
                         print('realPow == 0, not advanced', poWed)
                         powerAde[0] = 0
                         powerAde[1] = 0
@@ -650,26 +662,55 @@ def perform_operations(realPow, value):
             elif x[i] == "^" and justPowed > 0:
                 if realPow == 1:
                     poWed = int(theRealChars[-1])**int(realchars[i+1])
-                    theRealChars[-1] = poWed
+                    poWeRed = ""
+                    if "-" in realchars[-1]:
+                        poWeRed = "-" + str(poWed)
+                    else:
+                        poWeRed = str(poWed)
+                    theRealChars[-1] = poWeRed
+                    #theRealChars[-1] = poWed
                     print('currentop', x[i])
                     print('theRealCharsProcessing', theRealChars)
                 elif realPow == 0:
                     if i + 1 in range(-len(x), len(x)):
                         if x[i+1] == "^":
-                            powerAde[1] = powerAde[1]**int(realchars[i+1])
+                            if "-" in powerAde[1]:
+                                powerAde[1] = -1*(powerAde[1]**int(realchars[i+1]))
+                            else:
+                                powerAde[1] = powerAde[1]**int(realchars[i+1])
                             #poWed = int(realchars[i - justPowed])**int(realchars[i+1])
                         else:
-                            powerAde[1] = powerAde[1]**int(realchars[i+1])
-                            powerAde[0] = powerAde[0]**powerAde[1]
-                            theRealChars.append(str(powerAde[0]))
+                            if "-" in powerAde[1]:
+                                powerAde[1] = -1*(powerAde[1]**int(realchars[i+1]))
+                            else:
+                                powerAde[1] = powerAde[1]**int(realchars[i+1])
+                            #powerAde[1] = powerAde[1]**int(realchars[i+1])
+                            #powerAde[0] = powerAde[0]**powerAde[1]
+                            poWeRed = ""
+                            if "-" in powerAde[0]:
+                                poWeRed = "-" + str(powerAde[0]**powerAde[1])
+                            else:
+                                poWeRed = str(powerAde[0]**powerAde[1])
+                            theRealChars.append(poWeRed)
+                            #theRealChars.append(str(powerAde[0]))
                             print('currentop', x[i])
                             print('powerAde == 0, ready to reset', powerAde)
                             powerAde[0] = 0
                             powerAde[1] = 0
                     else:
-                        powerAde[1] = powerAde[1]**int(realchars[i+1])
-                        powerAde[0] = powerAde[0]**powerAde[1]
-                        theRealChars.append(str(powerAde[0]))
+                        if "-" in powerAde[1]:
+                            powerAde[1] = -1*(powerAde[1]**int(realchars[i+1]))
+                        else:
+                            powerAde[1] = powerAde[1]**int(realchars[i+1])
+                        #powerAde[1] = powerAde[1]**int(realchars[i+1])
+                        #powerAde[0] = powerAde[0]**powerAde[1]
+                        poWeRed = ""
+                        if "-" in powerAde[0]:
+                            poWeRed = "-" + str(powerAde[0]**powerAde[1])
+                        else:
+                            poWeRed = str(powerAde[0]**powerAde[1])
+                        theRealChars.append(poWeRed)
+                        #theRealChars.append(str(powerAde[0]))
                         print('currentop', x[i])
                         print('powerAde == 0, ready to reset', powerAde)
                         powerAde[0] = 0
